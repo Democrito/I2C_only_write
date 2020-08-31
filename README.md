@@ -5,6 +5,6 @@
 # Un breve repaso al I2C.
 ### Conceptos básicos:
 
-[](https://upload.wikimedia.org/wikipedia/commons/3/3e/I2C.svg)
+[](https://github.com/Democrito/I2C_only_write/blob/master/IMG/croquis_general_i2c.PNG)
 
 
