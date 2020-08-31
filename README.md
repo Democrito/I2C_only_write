@@ -40,7 +40,7 @@ Si observamos la imagen de arriba veremos que inicialmente tanto la línea de da
 
 ### Señal de validación de datos.
 
-![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/validacion_del_dato.PNG)
+![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/validacionDelDato.PNG)
 
 Si queremos diseñar un maestro I2C de sólo escritura fiable (que sea compatible con todos los periféricos) hemos de cumplir siempre esta regla de oro y es que **la señal de dato ha de englobar por completo la señal del reloj** es decir, que el flanco de subida y de bajada ha de estar dentro del periodo que dura el dato. En la imagen lo podemos ver como el relleno de color verde. Esto es muy importante porque hay periféricos que validan con flanco de subida y otros requieren de un periodo mínimo de duración de estado alto del reloj y por seguridad ese ciclo de reloj ha de estar dentro del ciclo del dato.
 
