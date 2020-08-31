@@ -18,11 +18,11 @@ Los hay de 8 bits y de 4 bits. Como el I2C sólo tiene 2 líneas (SDA y SCL) ent
 
 El valor de las dos resistencias pull-up (Rp) no son críticas. De forma estandar se suele poner un valor de 4k7, pero puedes utilizar valores un poco mayores o menores y funcionará igual de bien. Sin embargo a nosotros **no nos hará falta esas resistencias** porque vamos a utilizar el I2C siempre como escritura, nunca como lectura, entonces las señales de SDA y SCL siempre-siempre van del maestro al esclavo, y el maestro (FPGA) mantendrá los niveles de tensión (ya sean 0s ó 1s) en la línea sin entrar nunca en estado flotante o triestado.
 
-### Protocolo I2C.
+# Protocolo I2C.
 
 El protocolo I2C se basa en dos líneas de comunicación, el funcionamiento es síncrono, es decir, el dato (SDA) se valida con una señal de clock (SCL). Pese a que existen muchas imágenes de ejemplo donde se aprecia sus ondas, las más fiables son estas que verás a continuación.
 
-## Señal "start" y "stop".
+### Señal "start" y "stop".
 
 ![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/start_stop.PNG)
 
