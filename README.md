@@ -46,3 +46,9 @@ Si queremos diseñar un maestro I2C de sólo escritura fiable (que sea compatibl
 
 Una forma sencilla de ver esto es imaginar un registro de desplazamiento, en el que no sabemos si funciona por flanco de subida o de bajada, entonces lo que haríamos es englobar ambos casos. Primero sacamos el dato y luego creamos un pulso de validación (un estado alto de periodo concreto) y cuando el pulso vuelve al estado bajo es entonces cuando podemos sacar el siguiente dato.
 
+### Byte de dirección.
+
+Cada vez que enviemos un paquete de datos hemos de precederlo siempre con la dirección donde se encuentra el periférico que queramos que lo reciba. El paquete que contiene la dirección de nuestro periférico siempre ha de estar precedida con la secuencia **start**, dicha secuencia es lo primero que ha de salir antes de comenzar a enviar 0s y 1s.
+
+El paquete de dirección se compone de 9 bits: dirección del periférico (7 bits), bit de escritura/lectura y bit de ACK (reconocimiento).
+
