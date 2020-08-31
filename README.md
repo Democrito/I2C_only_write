@@ -5,6 +5,12 @@
 # Un breve repaso al I2C.
 ### Conceptos básicos:
 
-<center> ![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/croquis_general_i2c.PNG) </center>
+![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/croquis_general_i2c.PNG)
+
+Hoy en día existen dos niveles de alimentación que puede ser de 5v o de 3.3v. Cuando sucede que el maestro y el esclavo tienen distintos niveles de alimentanción entonces es necesario adaptar las tensiones para que no haya problemas de comunicación, y se hace a través de adaptadores de tensión bidireccional.
+
+
+
+
 
 
