@@ -45,6 +45,12 @@ La parte más complicada a la hora de diseñar un maestro I2C es crear la señal
 * La señal **start** siempre-siempre antecederá el paquete de dirección.
 * La señal **stop**  siempre-siempre estará al final del paquete de dato(s). El paquete de datos puede ser uno o muchos, no importa. Esta señal ha de ocurrir al finalizar el envío de un paquete de información.
 
+![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/scl_sda_data.PNG)
+
+La señal **start** y **stop** siempre se producen cuando **SCL está en estado alto y SDA cambia**. Si SCL la mantenemos en estado alto y SDA se pone a 0, producimos la señal de start; y si SCL se mantiene en alto y en ese momento hacemos que SDA pase a 1, provocamos la señal de stop.
+
+Sólo se interpretará y validará como bit de dato cuando en el transcurso de producirse la señal SCL comenzó y terminó con el mismo valor en SDA. 
+
 ### Señal de validación de datos.
 
 ![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/validacionDelDato.PNG)
