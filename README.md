@@ -32,7 +32,7 @@ Nosotros vamos a tratar el I2C como si fuese un registro de desplazamiento con a
 
 ### Señal "start" y "stop".
 
-![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/start_stop.PNG)
+![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/start_stop.png)
 
 La parte más complicada a la hora de diseñar un maestro I2C es crear la señal **start** y **stop**, no porque sean difíciles de crear esas señales, sino que tienen una forma particular y han de englobar toda la cadena de datos (dirección + datos). Es decir, que no funcionan con la misma filosofía que cuando se transmiten los datos en sí.
 
