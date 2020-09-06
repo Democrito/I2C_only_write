@@ -104,10 +104,45 @@ El módulo encuadrado en verde se encarga de avisar al exterior de que se ha com
 
 El resto de módulos son ajustes de sincronización para la señal Stop del I2C. Evité erróneamente utilizar un bit más del multiplexor que formaría la secuencia completa, sin embargo decidí finalizar la señal Stop de forma artificiosa. En el futuro arreglaré esta parte, que pese a que funciona bien, es optimizable a nivel de recursos.
 
-# El cerebro de la béstia!
+# El cerebro de la bestia!
 
 ![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/brain_i2c_only_write.PNG)
 
-Ahora convertimos todo lo anterior en un módulo, el resultado es como se aprecia en la imagen. Tenemos una entrada de 16 bits donde indicaremos la cantidad de bytes (**nbytes**) que vamos a enviar, en el ejemplo de la imagen son sólo 3 (dirección + dos de datos), pero tiene capacidad de poder enviar hasta 7281 bytes (65536/9) de una tacada. Tenemos una entrada de datos de 8 bits (**data**), que son los datos en sí, ahí iremos poniendo cada uno de los bytes que serán enviados cuando corresponda y para ello nos ayudaremos exteriormente de una máquina de contar (otro módulo), que a su vez irá validando cada uno de esos bytes a través de la patilla **exec**. Cuando finaliza el envío de un byte con su ACK correspondiente, emite una señal de **next** para avisar a la máquina de contar que puede contar una unidad más. Luego veremos cómo se monta todo esto y varios ejemplos. Cuando finaliza todo el envío (los 3 bytes del ejemplo) y se haya producido la señal de Stop, saldrá un tic por la patilla **done**.
+Ahora convertimos todo lo anterior en un módulo, el resultado es como se aprecia en la imagen. Tenemos una entrada de 16 bits donde indicaremos la cantidad de bytes (**nbytes**) que vamos a enviar, en el ejemplo de la imagen son sólo 3 (dirección + dos de datos), pero tiene capacidad de poder enviar hasta 7281 bytes (65536/9) de una tacada incluyendo el byte de dirección. Tenemos una entrada de datos de 8 bits (**data**), que son los datos en sí, ahí iremos poniendo cada uno de los bytes que serán enviados cuando corresponda y para ello nos ayudaremos exteriormente de una máquina de contar (otro módulo), que a su vez irá validando cada uno de esos bytes a través de la patilla **exec**. Cuando finaliza el envío de un byte con su ACK correspondiente, emite una señal de **next** para avisar a la máquina de contar que puede contar una unidad más. Luego veremos cómo se monta todo esto y varios ejemplos. Cuando finaliza todo el envío (los 3 bytes del ejemplo) y se haya producido la señal de Stop, saldrá un tic por la patilla **done**.
 
-(continuará)
+### Ejemplo 1. (Con pulsador)
+
+Voy a poner el ejemplo práctico más sencillo que existe, se trata de enviar un sólo byte de dato, pero hay que tener presente que ese dato ha de ir acompañado de la dirección a la que tiene que ir. Es decir, que vamos a enviar primero la dirección y luego un sólo byte de datos.
+
+![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/example_to_send_2_bytes_with_push_button_tick.PNG)
+
+* Este ejemplo lo puedes descargar haciendo [clic aquí.](https://github.com/Democrito/I2C_only_write/blob/master/examples/Example_to_send_2_bytes_with_push_button_tick.ice)
+* Para este ejemplo he utilizado el chip **PCF8574**, más información haciendo [clic aquí.](https://groups.google.com/d/msg/fpga-wars-explorando-el-lado-libre/QZqGqehCvuk/tu_J0C49CAAJ)
+
+La dirección de envío en decimal es **39** y también se puede escribir en hexadecimal como **'h27**, cada uno que tome el formato que más le guste. Por otro lado tenemos un dato a enviar que es constante con valor de **85** en decimal. Vamos a imaginar que tenemos ese chip conectado a nuestra FPGA, subimos el diseño y pulsamos "SW1" de nuestra Alhambra. Verás que los leds se encienden de forma alterna. Si ahora cambias el dato de envío por **170** y lo subes y vuelves a pulsar sobre "SW1", comprobarás que los led que estaban apagados ahora están encedidos y vice-versa.
+
+Podemos obsevar que la constante de la dirección (el 39) es multiplicado por 2. La dirección en realidad es de 7 bits, pero nos falta añadir el bit R/W, que es el bit más bajo (sin contar con ACK), y el bit R/W es siempre 0 porque siempre vamos a escribir, entonces para añadir ese 0 de forma automática se ha de multiplicar por 2 y ese 0 quedará añadido, y ahora sí que tenemos un byte verdadero de 8 bits.
+
+Como vamos a enviar dos bytes (dirección + dato) podemos usar un multiplexor de 8 bits de dos entradas. La máquina de contar, una vez que recibe el tic de "comenzar" (pulsando SW1) se encargará de poner el primer dato (la dirección, q=0) dará un tic por "exe", y cuando se haya enviado, recibirá un tic por "next", pondrá q=1 y multiplexará esta vez el dato (85) a enviar validándolo otra vez a través del pin "exe". Como le hemos dicho al *cerebro* del I2C que enviamos dos bytes (dirección + dato) le llegará a la máquina de contar un tic de "done" en el "stop". De todas formas se habría parado porque sólo puede contar hasta 1 (0 y 1), ya que la máquina de contar es de sólo un bit.
+
+### Ejemplo 2. (A través del serial)
+
+Vamos a utilizar el ejemplo anterior, pero en vez de usar las engorrosas constantes fijas, vamos a utilizar el serial para poner el valor que queramos (0..255) en cualquier momento.
+
+![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/Example_to_send_2_bytes_through_the_serial.PNG)
+
+* Este ejemplo lo puedes descargar haciendo [clic aquí.](https://github.com/Democrito/I2C_only_write/blob/master/examples/Example_to_send_2_bytes_through_the_serial.ice)
+
+Desde un terminal serie escribimos un número comprendido entre 0 y 255, le damos a *enviar* o *enter* y ese dato aparecerá en "i1" del multiplexor, acto seguido el serial produce un tic de validación (done) que llega al "start" de la máquina de contar, y al igual que en el ejemplo anterior, enviará a través del I2C el dato que hayamos puesto.
+
+### Ejemplo 3. (Ahora enviaremos 3 bytes)
+
+![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/Example_to_send_3_bytes_through_the_serial.PNG)
+
+* Este ejemplo lo puedes descargar haciendo [**clic aquí.**](https://github.com/Democrito/I2C_only_write/blob/master/examples/Example_to_send_3_bytes_through_the_serial.ice) Está pendiente de ser verificado, todavía no he comprobado el funcionamiento aunque lo he repasado varias veces.
+
+Ahora enviaremos 3 bytes (dirección + dato + dato). En este ejemplo utilizo una resistencia variable digital que se controla a través del I2C, con el nombre de [**AD5280**](https://groups.google.com/d/msg/fpga-wars-explorando-el-lado-libre/QZqGqehCvuk/L9yCuXW_BwAJ). El byte de dirección es 44 en decimal, luego viene un byte de dato que es de control, pero esto no nos importa ahora (son cuestiones técnicas del chip), para nosotros es un dato que se ha de enviar y finalmente otro dato, que puede ser un valor de 0..255, dependiendo del valor resistivos que queramos poner en la resistencia variable digital, y este valor lo podremos introducir a través del serial.
+
+# Conclusión.
+
+Con este controlador tenemos la flexibilidad de manejar cualquier esclavo I2C de sólo escritura sin importar el número de bytes que se haya de enviar. Por sencillez sólo he puesto ejemplos donde envían un número de datos fijos (que suele ser lo normal), pero tiene la versatilidad de poder configurarse en cualquier momento el número de bytes para ser enviados y depende de la pericia del diseñador darse cuenta de esto, aumentando aún más las posibilidades. Se puede incluir dentro del diseño memorias RAMs y ROMs para configurar ciertos periféricos complejos, como lo puede ser una pantalla OLED monocromática. 
