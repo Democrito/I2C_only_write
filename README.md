@@ -71,7 +71,19 @@ Es decir, que **en el paquete de dirección los bits R/W y ACK se fijan a 0**. N
 
 ![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/data01.PNG)
 
-El paquete de datos también se compone de 9 bits, que son los 8 bits de datos (un byte) más otro bit de ACK. Todos los bits de ACK siempre lo haremos valer 0. Un paquete de datos puede estar compuesto por uno o muchos "bytes" (con su ACK correspondiente) y se envían de forma consecutiva, lo único importante aquí es saber que el último "byte" de dato ha de terminar con la señal stop, que es la forma de indicar que hemos finalizado el envío. En la imagen se pone como ejemplo el envío de dos "bytes" con su correspondiente ACK y al último se le pone la señal de stop.
+El paquete de dato también se compone de 9 bits, que son los 8 bits de datos (un byte) más otro bit de ACK. Todos los bits de ACK siempre lo haremos valer 0. Un paquete de datos puede estar compuesto por uno o muchos "bytes" (con su ACK correspondiente) y se envían de forma consecutiva, lo único importante aquí es saber que el último "byte" de dato ha de terminar con la señal stop, que es la forma de indicar que hemos finalizado el envío. En la imagen se pone como ejemplo el envío de dos "bytes" (con su correspondiente ACK) y al último se le añade la señal de stop.
 
-La gran mayoría de las veces los periféricos (esclavos I2C) el número de "bytes" (con su ACK) a enviar son fijos. Pueden ser un sólo "byte", o de dos, o de tres, incluso de 4, pero existen periféricos que ese tamaño puede ser variable, y eso es lo que sucede si queremos manejar una pantalla OLED (por ejemplo).
+La gran mayoría de las veces los periféricos (esclavos I2C) el número de "bytes" a enviar son fijos. Pueden ser un sólo "byte", o de dos, o de tres, incluso de 4, pero existen periféricos que ese tamaño podría ser variable, y eso es lo que sucede si queremos manejar una pantalla OLED (por ejemplo).
+
+Por esta razón en el diseño de un maestro I2C genérico (que contemple la mayoría de casos) hemos de diseñarlo de tal forma que podamos enviar desde 1 "byte" hasta miles de ellos de una sola tacada.
+
+# Diseño electrónico.
+
+Lo más probable es que si a 50 personas les pidiéramos que diseñaran un maestro I2C de sólo escritura, obtendríamos 50 diseños diferentes. Voy a poner la versión que hice, que seguramente se podría mejorar y/u optimizar. La cuestión es que funciona bien y hasta el momento no he tenido ningún problema. Si quieres hacer tu propia versión, todo lo que explico te puede ahorrar mucho trabajo.
+
+El diseño general es este, y no te asustes, luego iremos por partes.
+
+(continuará)
+
+
 
