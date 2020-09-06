@@ -6,7 +6,7 @@
 
 ### Tensión de alimentación.
 
-El I2C de **sólo lectura** tiene unas peculiariedades y entre ellas está que no se utiliza resistencias pull-up, eso significa que se puede conectar como cualquier otro circuito convencional.
+El I2C de **sólo escritura** tiene unas peculiariedades y entre ellas está que no se utiliza resistencias pull-up, eso significa que se puede conectar como cualquier otro circuito convencional.
 
 Hoy en día existen dos niveles de voltaje que puede ser de 5v o de 3,3v. Cuando el maestro y el esclavo tienen distintos niveles de voltaje entonces es necesario adaptar las tensiones para que no haya problemas de comunicación, y se hace a través de adaptadores de tensión bidireccional.
 
