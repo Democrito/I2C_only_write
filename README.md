@@ -1,22 +1,20 @@
 # I2C sólo escritura.
 
-*La intención de este tutorial es enseñarte a ser capaz de diseñar y manejar cualquier periferico I2C de sólo escritura a través del programa de diseño electrónico [**Icestudio**](https://github.com/FPGAwars/icestudio) utilizando como FPGA la [**Alhambra II**](https://alhambrabits.com/alhambra/).*
+*La intención de este tutorial es enseñarte a diseñar y manejar cualquier periferico I2C de sólo escritura a través del programa de diseño electrónico [**Icestudio**](https://github.com/FPGAwars/icestudio) utilizando como FPGA la [**Alhambra II**](https://alhambrabits.com/alhambra/).*
 
 ![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/croquis_general_i2c.PNG)
 
 ### Tensión de alimentación.
 
-El I2C de **sólo lectura** tiene unas peculiariedades y entre ellas está que no se usa resistencias pull-up, eso significa que se puede conectar como cualquier otro circuito convencional.
+El I2C de **sólo lectura** tiene unas peculiariedades y entre ellas está que no se utiliza resistencias pull-up, eso significa que se puede conectar como cualquier otro circuito convencional.
 
-Hoy en día existen dos niveles de voltaje que puede ser de 5v o de 3,3v. Cuando sucede que el maestro y el esclavo tienen distintos niveles de voltaje entonces es necesario adaptar las tensiones para que no haya problemas de comunicación, y se hace a través de adaptadores de tensión bidireccional.
+Hoy en día existen dos niveles de voltaje que puede ser de 5v o de 3,3v. Cuando el maestro y el esclavo tienen distintos niveles de voltaje entonces es necesario adaptar las tensiones para que no haya problemas de comunicación, y se hace a través de adaptadores de tensión bidireccional.
 
 Nota: Uso la palabra *tensión* y *voltaje* indistintamente, pero es lo mismo.
 
-![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/adaptador_de_niveles_de_tensi%C3%B3n_33_5.PNG)
+![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/adaptador_de_niveles_de_tension_33_5.PNG)
 
-Los hay de 8 y de 4 bits. El I2C sólo tiene 2 líneas (SDA y SCL) entonces usaríamos (sólo si fuese necesario) dos bits del adaptador de tensión bidireccional. Es frecuente que a pesar de que maestro y esclavo se alimenten con tensiones diferentes se puedan tolerar entre ambos, es decir, que el de 5v acepte señales de 3,3v y que el de 3,3v tolere líneas de comunicaciónes de 5v. Si ese fuese el caso no necesitaríamos el adaptador y para asegurarte has de mirar el datasheet del periférico que vas a utilizar, y si no menciona nada sobre ello, has de mirar a partir de qué voltaje se considera que un 0 es cero y que un 1 es uno.
-
-La Alhambra-II (FPGA) da señales de salida de 3,3v. Si el periférico se alimenta con 5v hemos de saber si es capaz de interpretar como 1 lógico un voltaje que no esté por debajo de los 2,8v (lea como 1 lógico a partir de los 2,8v y no menos que eso). De lo contrario sería necesario un adaptador de tensión.
+Los hay de 4 y 8 bits. El I2C sólo tiene 2 líneas (SDA y SCL) entonces usaríamos (sólo si fuese necesario) dos bits del adaptador de tensión bidireccional. Es frecuente que a pesar de que maestro y esclavo se alimenten con tensiones diferentes se puedan tolerar entre ambos, es decir, que el de 5v acepte señales de 3,3v y que el de 3,3v tolere líneas de comunicaciónes de 5v. Si ese fuese el caso no necesitaríamos el adaptador y para asegurarte has de mirar el datasheet del periférico que vas a utilizar, y si no menciona nada sobre ello, has de mirar a partir de qué voltaje se considera que un 0 es cero y que un 1 es uno. La Alhambra-II (FPGA) da señales de salida de 3,3v. Si el periférico (el esclavo) se alimenta con 5v hemos de tener todo esto presente.
 
 ### Las resistencias pull-up (innecesarias para nosotros).
 
@@ -26,17 +24,17 @@ El valor de las dos resistencias pull-up (Rp) no son críticas. De forma estanda
 
 El protocolo I2C se basa en dos líneas de comunicación, el funcionamiento es síncrono, es decir, el dato (SDA) se valida con un ciclo de reloj (SCL). Pese a que existen muchas imágenes de ejemplo donde se aprecia sus ondas, las más intuitivas son las que pondré en este tutorial.
 
-Recuerda que siempre vamos a utilizar periféricos que sólo necesitan leer (el maestro I2C es el que escribe), es decir, que **no se puede conectar periféricos que envían datos al maestro I2C.** Por ejemplo, no se puede conectar periféricos I2C del tipo: ADC, memorias externas, sensores, relojes de tiempo real, etc. Sí se puede conectar DACs, puertos de salida, OLEDs monocromáticas, displays series, etc.
+Recuerda que vamos a utilizar periféricos (esclavos) que sólo necesitan leer (el maestro I2C es el que escribe), es decir, que **no se puede conectar periféricos que envían datos al maestro I2C.** Por ejemplo, no se puede conectar periféricos I2C del tipo: ADC, memorias externas, sensores, relojes de tiempo real, etc. Sí se puede conectar DACs, puertos de salida, resistencias variables digitales, OLEDs monocromáticas, displays series, etc.
 
-Nosotros vamos a tratar el I2C como si fuese un registro de desplazamiento con alguna peculiariedades. Quédate con esta idea y así lo verás todo más fácil.
+Nosotros vamos a tratar el I2C como si fuese un registro de desplazamiento con algunas peculiariedades. Quédate con esta idea y así lo verás todo más sencillo.
 
 ### Señal "start" y "stop".
 
-![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/start_stop.png)
+![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/start__stop.png)
 
-La parte más complicada a la hora de diseñar un maestro I2C es crear la señal **start** y **stop**, no porque sean difíciles de crear esas señales, sino que tienen una forma particular y han de englobar toda la cadena de datos (dirección + datos). Es decir, que no funcionan con la misma filosofía que cuando se transmiten los datos en sí.
+La parte más complicada a la hora de diseñar un maestro I2C es crear la señal **start** y **stop** porque tienen una forma particular y han de englobar toda la cadena de datos (dirección + datos). Es decir, que no funcionan con la misma filosofía que cuando se transmiten los datos en sí.
 
-**Start:** Si observamos la imagen de arriba vemos que inicialmente tanto la línea de datos (SDA) y el reloj (SCL) se mantienen en alto, así se mantendrá mientras no haya transferencia de datos. Cuando vamos a transmitir datos ha de comenzar de la siguiente manera: primero ha de ponerse a 0 la línea SDA, y después ha de hacer lo mismo la línea SCL. Ese es el aviso de que se van a transmitir datos y el periférico se preparará para recibirlos. En la imagen se aprecia como área roja izquierda.
+**Start:** Si observamos la imagen de arriba vemos que inicialmente tanto la línea de datos (SDA) y el reloj (SCL) se mantienen en alto, así se mantendrá mientras no haya transferencia de datos. Cuando vamos a transmitir datos ha de comenzar de la siguiente manera: estando las dos líneas en alto, primero ha de ponerse a 0 la línea SDA, y después ha de hacer lo mismo la línea SCL. Ese es el aviso de que se van a transmitir datos y el periférico se preparará para recibirlos. En la imagen se aprecia como área roja izquierda.
 
 **Repeat start:** Esta señal de color rosácea no la vamos a tener en cuenta, pero es bueno que sepas que podría existir. Algunos de los periféricos I2C con los que he experimentado la contemplan, pero sigue funcionando si no la tiene. Se utiliza para volver a hacer un **start** cada vez que termina un paquete de datos o de dirección, avisando de que viene otro.
 
@@ -47,7 +45,7 @@ La parte más complicada a la hora de diseñar un maestro I2C es crear la señal
 
 ![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/scl_sda_data.PNG)
 
-La señal **start** y **stop** siempre se producen cuando **SCL está en estado alto y SDA cambia**. Si SCL la mantenemos en estado alto y SDA se pone a 0, producimos la señal de start; y si SCL se mantiene en alto y en ese momento hacemos que SDA pase a 1, provocamos la señal de stop.
+*Más en detalle*: La señal **start** y **stop** se producen cuando **SCL está en estado alto y SDA cambia**. Si SCL la mantenemos en estado alto y SDA se pone a 0, producimos la señal de start; y si SCL se mantiene en alto y en ese momento hacemos que SDA pase a 1, provocamos la señal de stop.
 
 Sólo se interpretará y validará como bit de dato cuando en el transcurso de producirse la señal SCL comenzó y terminó con el mismo valor en SDA. 
 
@@ -63,8 +61,17 @@ Una forma sencilla de ver esto es imaginar un registro de desplazamiento, en el 
 
 ![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/send_address.PNG)
 
-El paquete de dirección se compone de 9 bits: dirección del periférico que son 7 bits (en rojo), bit de lectura/escritura (en verde) y bit de ACK (reconocimiento, en azul).
+El paquete de dirección se compone de 9 bits: dirección del periférico que son 7 bits (en rojo), bit de lectura/escritura o R/W (en verde) y bit de ACK (reconocimiento, en azul).
 El paquete que contiene la dirección del periférico ha de estar precedida con la secuencia **start** (área amarilla), esta secuencia es lo primero que ha de salir antes de comenzar a enviar 0s y 1s.
 
 Como vamos a diseñar un maestro I2C de sólo escritura entonces el bit **R/W** siempre será 0. El bit **ACK** es un bit de lectura para comprobar si algún periférico lo ha recibido, esperando el maestro I2C un 0 para confirmarlo. Como no puede hacer lectura y estamos seguros de que el periférico está conectado, este bit también lo fijamos a 0.
-Es decir, que en **el paquete de dirección los bits R/W y ACK se fijan a 0**. No debemos preocuparnos por verificar los datos. La única preocupación que has de tener para asegurarte de que siempre va a funcionar correctamente es asegurarte de que la distancia entre el maestro y el periférico sea lo más corto posible; yo uso cables de unos 20cm. He probado con periféricos I2C del tipo resistencia variable, DAC, puerto de salida y OLED por largas horas y sin problemas. El I2C fue diseñado para comunicar información dentro de una PCB o dentro de un módulo de shields, sin embargo acepta distancias muchísimo mayores.
+Es decir, que **en el paquete de dirección los bits R/W y ACK se fijan a 0**. No debemos preocuparnos por verificar los datos. La única preocupación que has de tener es asegurarte de que la distancia entre el maestro y el periférico sea lo más corto posible; yo suelo usar cables de unos 20cm. He probado con periféricos I2C del tipo resistencia variable digital, DAC, puerto de salida y OLED por largas horas y sin problemas. El I2C fue diseñado para comunicar información dentro de una PCB o dentro de un módulo de shields, sin embargo acepta distancias muchísimo mayores.
+
+### Paquete de datos.
+
+![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/data01.PNG)
+
+El paquete de datos también se compone de 9 bits, que son los 8 bits de datos (un byte) más otro bit de ACK. Todos los bits de ACK siempre lo haremos valer 0. Un paquete de datos puede estar compuesto por uno o muchos "bytes" (con su ACK correspondiente) y se envían de forma consecutiva, lo único importante aquí es saber que el último "byte" de dato ha de terminar con la señal stop, que es la forma de indicar que hemos finalizado el envío. En la imagen se pone como ejemplo el envío de dos "bytes" con su correspondiente ACK y al último se le pone la señal de stop.
+
+La gran mayoría de las veces los periféricos (esclavos I2C) el número de "bytes" (con su ACK) a enviar son fijos. Pueden ser un sólo "byte", o de dos, o de tres, incluso de 4, pero existen periféricos que ese tamaño puede ser variable, y eso es lo que sucede si queremos manejar una pantalla OLED (por ejemplo).
+
