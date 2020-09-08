@@ -117,7 +117,7 @@ Voy a poner el ejemplo práctico más sencillo que existe, se trata de enviar un
 ![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/example_to_send_2_bytes_with_push_button_tick.PNG)
 
 * Este ejemplo lo puedes descargar haciendo [clic aquí.](https://github.com/Democrito/I2C_only_write/blob/master/examples/Example_to_send_2_bytes_with_push_button_tick.ice)
-* Para este ejemplo he utilizado el chip **PCF8574**, más información haciendo [clic aquí.](https://groups.google.com/d/msg/fpga-wars-explorando-el-lado-libre/QZqGqehCvuk/tu_J0C49CAAJ)
+* Para este ejemplo he utilizado el chip **PCF8574**, más información haciendo [clic aquí.](http://www.aquihayapuntes.com/indice-practicas-pic-en-c/expansor-de-e-s-pcf8574.html)
 
 La dirección de envío en decimal es **39** y también se puede escribir en hexadecimal como **'h27**, cada uno que tome el formato que más le guste. Por otro lado tenemos un dato a enviar que es constante con valor de **85** en decimal. Vamos a imaginar que tenemos ese chip conectado a nuestra FPGA, subimos el diseño y pulsamos "SW1" de nuestra Alhambra. Verás que los leds se encienden de forma alterna. Si ahora cambias el dato de envío por **170** y lo subes y vuelves a pulsar sobre "SW1", comprobarás que los led que estaban apagados ahora están encedidos y vice-versa.
 
@@ -145,4 +145,4 @@ Ahora enviaremos 3 bytes (dirección + dato + dato). En este ejemplo utilizo una
 
 # Conclusión.
 
-Con este controlador tenemos la flexibilidad de manejar cualquier esclavo I2C de sólo escritura sin importar el número de bytes que se haya de enviar. Por sencillez sólo he puesto ejemplos donde envían un número de datos fijos (que suele ser lo normal), pero tiene la versatilidad de poder configurarse en cualquier momento el número de bytes para ser enviados y depende de la pericia del diseñador darse cuenta de esto, aumentando aún más las posibilidades. Se puede incluir dentro del diseño memorias RAMs y ROMs para configurar ciertos periféricos complejos, como lo puede ser una pantalla OLED monocromática. 
+Con este controlador tenemos la flexibilidad de manejar cualquier esclavo I2C de sólo escritura sin importar el número de bytes que se haya de enviar. Por sencillez sólo he puesto ejemplos donde envían un número de datos fijos (que suele ser lo normal), pero tiene la versatilidad de poder configurarse en cualquier momento el número de bytes para ser enviados y depende de la pericia del diseñador darse cuenta de esto, aumentando aún más las posibilidades. Se puede incluir dentro del diseño memorias RAMs y ROMs para configurar ciertos periféricos complejos, como lo puede ser una pantalla OLED monocromática. Y para finalizar, también es posible manejar más de un esclavo, porque es posible cambiar el ancho de la información a enviar.
