@@ -1,6 +1,6 @@
-# I2C sólo escritura.
+# Diseño con FPGA de Maestro I2C de sólo escritura.
 
-*La intención de este tutorial es enseñarte a diseñar y manejar cualquier periferico I2C de sólo escritura a través del programa de diseño electrónico [**Icestudio**](https://github.com/FPGAwars/icestudio) utilizando como FPGA la [**Alhambra II**](https://alhambrabits.com/alhambra/).* Vamos a sobre-entender que estamos dentro de frecuencias de entre 100 y 400 KHz, y el ancho de la dirección es de 7 bits.
+*La intención de este tutorial es aprender a diseñar y manejar cualquier periferico I2C de sólo escritura a través del programa de diseño electrónico [**Icestudio**](https://github.com/FPGAwars/icestudio) en mi caso utilizo como FPGA la [**Alhambra II**](https://alhambrabits.com/alhambra/).* Vamos a sobre-entender que estamos dentro de frecuencias de entre 100 y 400 KHz y el ancho de la dirección es de 7 bits.
 
 ![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/croquis_general_i2c.PNG)
 
