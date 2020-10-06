@@ -10,7 +10,7 @@ Hoy en día existen dos niveles de voltaje que puede ser de 5v o de 3,3v. Cuando
 
 ![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/adaptador_de_niveles_de_tension_33_5.PNG)
 
-Los hay de 4 y 8 bits. El I2C sólo tiene 2 líneas (SDA y SCL) entonces usaríamos (sólo si fuese necesario) dos bits del adaptador de tensión bidireccional. Es frecuente que a pesar de que maestro y esclavo se alimenten con tensiones diferentes se puedan tolerar entre ambos, es decir, que el de 5v acepte señales de 3,3v y que el de 3,3v tolere líneas de comunicaciónes de 5v. Si ese fuese el caso no necesitaríamos el adaptador y para asegurarte has de mirar el datasheet del periférico I2C que vas a utilizar, y si no menciona nada sobre ello, has de mirar a partir de qué voltaje se considera que un cero es 0 y que un uno es 1. La Alhambra-II (FPGA) da señales de salida de 3,3v. Si el periférico (el esclavo) se alimenta con 5v hemos de tener esto presente.
+Los hay de 4 y 8 bits. El I2C sólo tiene 2 líneas (SDA y SCL) entonces usaríamos (sólo si fuese necesario) dos bits del adaptador de tensión bidireccional. Es frecuente que a pesar de que maestro y esclavo se alimenten con tensiones diferentes se puedan tolerar entre ambos, es decir, que el de 5v acepte señales de 3,3v y que el de 3,3v tolere líneas de comunicaciónes de 5v. Si ese fuese el caso no necesitaríamos el adaptador y para asegurarte has de mirar el datasheet del periférico I2C que vas a utilizar. La Alhambra-II (FPGA) da señales de salida de 3,3v. Si el periférico (el esclavo) se alimenta con 5v hemos de tener esto presente. Más información sobre niveles de tensión haz [clic aquí.](https://www.youtube.com/watch?v=6SiGlechlNM)
 
 ### Las resistencias pull-up (innecesarias para nosotros).
 
@@ -141,7 +141,7 @@ Desde un terminal serie escribimos un número comprendido entre 0 y 255, le damo
 
 * Este ejemplo lo puedes descargar haciendo [**clic aquí.**](https://github.com/Democrito/I2C_only_write/blob/master/examples/Example_to_send_3_bytes_through_the_serial.ice) Está pendiente de ser verificado, todavía no he comprobado el funcionamiento aunque lo he repasado varias veces.
 
-Ahora enviaremos 3 bytes (dirección + dato + dato). En este ejemplo utilizo una resistencia variable digital que se controla a través del I2C, con el nombre de [**AD5280**](https://groups.google.com/d/msg/fpga-wars-explorando-el-lado-libre/QZqGqehCvuk/L9yCuXW_BwAJ). El byte de dirección es 44 en decimal, luego viene un byte de dato que es de control, pero esto no nos importa ahora (son cuestiones técnicas del chip), para nosotros es un dato que se ha de enviar y finalmente otro dato, que puede ser un valor de 0..255, dependiendo del valor resistivos que queramos poner en la resistencia variable digital, y este valor lo podremos introducir a través del serial.
+Ahora enviaremos 3 bytes (dirección + dato + dato). En este ejemplo utilizo una resistencia variable digital que se controla a través del I2C, con el nombre de [**AD5280**](https://groups.google.com/d/msg/fpga-wars-explorando-el-lado-libre/QZqGqehCvuk/L9yCuXW_BwAJ). El byte de dirección es 44 en decimal ('h2C en hexadecimal), luego viene un byte de dato que es de control, pero esto no nos importa ahora (son cuestiones técnicas del chip), para nosotros es un dato que se ha de enviar y finalmente otro dato, que puede ser un valor de 0..255, dependiendo del valor resistivos que queramos poner en la resistencia variable digital, y este valor lo podremos introducir a través del serial.
 
 # Conclusión.
 
