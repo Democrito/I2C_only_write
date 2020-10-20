@@ -95,14 +95,17 @@ Vemos que la cantidad de datos a enviar (nbytes) se multiplica por 9. Se trata d
 
 ![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/synchro.PNG)
 
-El módulo encuadrado en rojo se encarga de sincronizar la frecuencia I2C con la entrada start del circuito. Lo que hace es obligar a poner en marcha el circuito justo cuando la frecuencia I2C está en un flanco de bajada. Esto obliga a que la señal de la secuencia Start del I2C dure siempre el mismo periodo.
+El módulo encuadrado en rojo se encarga de sincronizar la frecuencia I2C con la entrada start del circuito. Poner en marcha el circuito justo cuando la frecuencia I2C está en un flanco de bajada. Esto obliga a que la señal de la secuencia Start del I2C dure siempre el mismo periodo.
 
-El módulo encuadrado en azul lo que hace es tomar el primer ciclo de la señal de la frecuencia del I2C y la descompone en dos pulsos por la salida "Tics2", el primero cuando hace el flanco de subida y el segundo cuando hace flanco de bajada, estos dos pulsos crean la señal **Start** y a la vez activa la comparación de número máximo de bits a enviar.
-Terminado estos dos pulsos, que se corresponde con la secuencia **Start**, deja de actuar esa salida y ahora los pulsos saldrán por la salida "shift" de dicho módulo, que irá desplazando cada uno de los bits en SDA con su correspondiente pulso de validación en SCL.
+El módulo encuadrado en azul tomar el primer ciclo de la señal de la frecuencia del I2C y la descompone en dos pulsos por la salida "Tics2", el primero cuando hace el flanco de subida y el segundo cuando hace flanco de bajada, estos dos pulsos crean la señal **Start** y a la vez activa la comparación de número máximo de bits a enviar. Terminado estos dos pulsos, que se corresponde con la secuencia **Start**, deja de actuar esa salida y los siguientes pulsos se conmuta por la salida "shift" de dicho módulo, que irá desplazando cada uno de los bits en SDA con su correspondiente pulso de validación en SCL.
 
 El módulo encuadrado en verde se encarga de avisar al exterior de que se ha completado el envío de 9 bits (un byte + ACK), para que le pase el siguiente dato a enviar.
 
-El resto de módulos son ajustes de sincronización para crear la señal Stop del I2C. Para ello se necesita dos pulsos más y lo toma de un solo ciclo de la frecuencia de entrada del I2C.
+El módulo encuadrado en amarillo tiene la función de detectar el fin de envío de datos. En su interior hay un comparador que compara el número de bits total a enviar con el número de bits enviado hasta el momento. Cuando la comparación se cumple (es igual) da un tic por "end". La entra 'p' y la salida 'o' es transparente, es decir, un cable que envía los dos pulsos iniciales al contador para formar la señal **start**. Este "cable" también se encarga de permitir que el comparador pueda estar activo; de esto se encarga un flip-flop tipo D que hay en el interior.
+
+El módulo encarcado en rosa-chiclé tiene la función de construir la señal **stop**. Toma el último ciclo de la frecuencia I2C y la descompone en dos pulsos (esto también lo hicimos para fabricar la start en otro módulo) y se lo pasa al contador que arbitra los multiplexores. Una vez que se produce los dos pulsos se resetea ciertos contadores y módulos. 
+
+Queda sin enmarcar un contador de 16 bits, que es el encargado de contar los bits que van saliendo. Este contaje va al módulo amarillo para compararlo con el número máximo de bits a enviar.
 
 # El cerebro de la bestia!
 
