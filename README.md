@@ -99,7 +99,7 @@ Vemos que la cantidad de datos a enviar (nbytes) se multiplica por 9. Se trata d
 
 **Nota:** recomiendo tener el circuito abierto en Icestudio para poder hacer zoom, ya que las imágenes de aquí están "a vista de pájaro".
 
-El módulo encuadrado en rojo se encarga de sincronizar la frecuencia I2C con la entrada "start" del circuito. Poner en marcha el circuito justo cuando la frecuencia I2C está en un flanco de bajada. Esto obliga a que la señal de la secuencia "start" del I2C dure siempre el mismo periodo.
+El módulo encuadrado en rojo se encarga de sincronizar la frecuencia I2C con la entrada "start" del circuito. Poner en marcha el circuito justo cuando la frecuencia I2C está en un flanco de bajada. Esto obliga a que la señal de la secuencia "start" dure siempre el mismo periodo.
 
 El módulo encuadrado en azul tomar el primer ciclo de la señal de la frecuencia del I2C y la descompone en dos pulsos por la salida "Tics2", el primero cuando hace el flanco de subida y el segundo cuando hace flanco de bajada, estos dos pulsos crean la señal **start** y a la vez activa la comparación de número máximo de bits a enviar en otro módulo. Terminado estos dos pulsos, que se corresponde con la secuencia **start**, deja de actuar esa salida y los siguientes pulsos se conmuta por la salida "shift" de dicho módulo, que irá desplazando cada uno de los bits en SDA con su correspondiente pulso de validación en SCL.
 
