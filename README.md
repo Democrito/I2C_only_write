@@ -4,23 +4,11 @@
 
 ![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/croquis_general_i2c.PNG)
 
-### Tensión de alimentación.
-
-Hoy en día existe dos niveles de voltaje que puede ser 5V o 3,3V. Cuando el maestro y el esclavo tienen distintos niveles de voltaje entonces es necesario adaptar las tensiones para que no haya problemas de comunicación, y se hace a través de adaptadores de tensión bidireccional.
-
-![](https://github.com/Democrito/I2C_only_write/blob/master/IMG/adaptador_de_niveles_de_tension_33_5.png)
-
-Los hay de 4 y 8 bits. El I2C sólo tiene 2 líneas (SDA y SCL) entonces usaríamos (sólo si fuese necesario) dos bits del adaptador de tensión bidireccional. Es frecuente que a pesar de que maestro y esclavo se alimenten con tensiones diferentes se puedan tolerar entre ambos, es decir, que el de 5v acepte señales de 3,3V y que el de 3,3V tolere líneas de comunicaciónes de 5V. Si este fuese el caso no necesitaríamos el adaptador y para asegurarte has de mirar el datasheet del periférico I2C que vas a utilizar. La Alhambra-II (FPGA) da señales de salida de 3,3V. Si el periférico (el esclavo) se alimenta con 5V hemos de tener esto presente. Más información sobre niveles de tensión haz [clic aquí.](https://www.youtube.com/watch?v=6SiGlechlNM)
-
-### Las resistencias pull-up (innecesarias para nosotros).
-
-El valor de las dos resistencias pull-up (Rp) no son críticas pueden rondar entre 50K y 1K, cuanto mayor es la velocidad menor ha de ser la resistencia. De forma estandar se suele poner un valor de 4k7. Sin embargo **no nos hará falta esas resistencias** porque vamos a utilizar el I2C siempre como escritura, nunca como lectura, entonces las señales de SDA y SCL siempre van del maestro al/los esclavo(s), y el maestro (FPGA) mantendrá los niveles de tensión (ya sean 0s ó 1s) en las líneas sin entrar nunca en estado flotante o triestado. Si el periférico ya las lleva incluidas, no pasa nada, seguirá funcionando igual de bien que si no las tuviera.
-
 # Protocolo I2C.
 
 El protocolo I2C se basa en dos líneas de comunicación, el funcionamiento es síncrono, es decir, el dato (SDA) se valida con un ciclo de reloj (SCL).
 
-Recuerda que esta versión de maestro I2C sólo puede escribir, entonces **no se puede conectar periféricos que envían datos al maestro I2C.** Por ejemplo, no se puede conectar periféricos I2C del tipo: ADC, memorias externas, sensores, relojes de tiempo real, etc. Sí se puede conectar DACs, puertos de salida, resistencias variables digitales, OLEDs monocromáticas, displays series, etc.
+Esta versión de maestro I2C sólo puede escribir, entonces **no se puede conectar periféricos que envían datos al maestro I2C.** Por ejemplo, no se puede conectar periféricos I2C del tipo: ADC, memorias externas, sensores, relojes de tiempo real, etc. Sí se puede conectar DACs, puertos de salida, resistencias variables digitales, OLEDs monocromáticas, displays series, etc.
 
 ### Señal "start" y "stop".
 
